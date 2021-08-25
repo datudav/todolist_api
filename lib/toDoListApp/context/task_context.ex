@@ -6,8 +6,8 @@ defmodule ToDoListApp.TaskContext do
   import Ecto.Query, warn: false
   import Ecto.Changeset
   alias ToDoListApp.Repo
-
   alias ToDoListApp.TaskContext.Task
+  alias ToDoListApp.TaskContext.TaskComment
 
   @doc """
   Returns the list of tasks.
@@ -18,10 +18,10 @@ defmodule ToDoListApp.TaskContext do
       [%Task{}, ...]
 
   """
-  def list_tasks do
-    query = from t in Task,
-          order_by: [asc: t.rank]
-    Repo.all(query)
+  def list_tasks(list_id) do
+    Repo.all(from t in Task,
+            where: t.list_id == ^list_id,
+            order_by: [asc: t.rank])
   end
 
   @doc """
@@ -126,6 +126,90 @@ defmodule ToDoListApp.TaskContext do
       ranks = Repo.all(query)
       new_rank = Decimal.div(Decimal.add(Enum.at(ranks, 0), Enum.at(ranks, 1)), 2)
       update_task(task, %{rank: new_rank})
+  end
+
+  @doc """
+  Returns the list of task comments by task_id.
+
+  ## Examples
+
+      iex> list_task_comments()
+      [%Task{}, ...]
+
+  """
+  def list_task_comments(task_id) do
+    Repo.all(from t in TaskComment,
+      where: t.task_id == ^task_id,
+      order_by: [asc: t.inserted_at])
+  end
+
+  @doc """
+  Gets a single task comment.
+
+  Raises `Ecto.NoResultsError` if the Task Comment does not exist.
+
+  ## Examples
+
+      iex> get_task_comment!(123)
+      %Task{}
+
+      iex> get_task_comment!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_task_comment!(id), do: Repo.get!(TaskComment, id)
+
+
+  @doc """
+  Creates a task comment.
+
+  ## Examples
+
+      iex> create_task_comment(%{field: value})
+      {:ok, %Task{}}
+
+      iex> create_task_comment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_task_comment(attrs \\ %{}) do
+    %TaskComment{}
+    |> TaskComment.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a task comment.
+
+  ## Examples
+
+      iex> update_task_comment(task, %{field: new_value})
+      {:ok, %Task{}}
+
+      iex> update_task_comment(task, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_task_comment(%TaskComment{} = task_comment, attrs) do
+    task_comment
+    |> TaskComment.changeset(attrs)
+    |> Repo.update()
+  end
+
+    @doc """
+  Deletes a task comment.
+
+  ## Examples
+
+      iex> delete_task_comment(task_comment)
+      {:ok, %Task{}}
+
+      iex> delete_task_comment(task_comment)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_task_comment(%TaskComment{} = task_comment) do
+    Repo.delete(task_comment)
   end
 
   defp set_unix_epoch(changeset) do

@@ -2,13 +2,15 @@ defmodule ToDoListApp.Account.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:user_id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
     field :is_active, :boolean, default: false
     field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string
+
+    has_one(:board, ToDoListApp.BoardContext.Board, foreign_key: :board_id)
 
     timestamps()
   end
