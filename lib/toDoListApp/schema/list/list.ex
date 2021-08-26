@@ -4,14 +4,11 @@ defmodule ToDoListApp.ListContext.List do
   alias ToDoListApp.ListContext.List
 
   @primary_key {:list_id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "lists" do
     field :title, :string
     field :description, :string
-
-    belongs_to(:board, ToDoListApp.BoardContext.Board, references: :board_id)
-    has_many(:tasks, ToDoListApp.TaskContext.Task, foreign_key: :task_id)
-    belongs_to(:creator, ToDoListApp.Account.User, references: :user_id)
+    field :board_id, Ecto.UUID
+    field :creator_id, Ecto.UUID
 
     timestamps()
   end
@@ -19,7 +16,7 @@ defmodule ToDoListApp.ListContext.List do
   @doc false
   def changeset(%List{} = list, attrs) do
     list
-    |> cast(attrs, [:title, :description, :board_id])
-    |> validate_required([:title, :description, :board_id])
+    |> cast(attrs, [:title, :description, :board_id, :creator_id])
+    |> validate_required([:title, :description, :board_id, :creator_id])
   end
 end

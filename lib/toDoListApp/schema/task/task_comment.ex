@@ -4,12 +4,10 @@ defmodule ToDoListApp.TaskContext.TaskComment do
   alias ToDoListApp.TaskContext.TaskComment
 
   @primary_key {:task_comment_id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "task_comment" do
     field :comments, :string
-
-    belongs_to(:task, ToDoListApp.TaskContext.Task, references: :task_id)
-    belongs_to(:creator, ToDoListApp.Account.User, references: :user_id)
+    field :task_id, Ecto.UUID
+    field :creator_id, Ecto.UUID
 
     timestamps()
   end
@@ -17,7 +15,7 @@ defmodule ToDoListApp.TaskContext.TaskComment do
   @doc false
   def changeset(%TaskComment{} = task_comment, attrs) do
     task_comment
-    |> cast(attrs, [:comments])
-    |> validate_required([:comments])
+    |> cast(attrs, [:comments, :task_id, :creator_id])
+    |> validate_required([:comments, :task_id, :creator_id])
   end
 end

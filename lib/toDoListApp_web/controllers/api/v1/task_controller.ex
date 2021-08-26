@@ -6,8 +6,8 @@ defmodule ToDoListAppWeb.Api.V1.TaskController do
 
   action_fallback ToDoListAppWeb.FallbackController
 
-  def index(conn, _params) do
-    tasks = TaskContext.list_tasks()
+  def index(conn, %{"list_id" => list_id}) do
+    tasks = TaskContext.list_tasks(list_id)
     render(conn, "index.json", tasks: tasks)
   end
 
