@@ -14,6 +14,8 @@ defmodule ToDoListAppWeb.Api.V1.TaskView do
     %{id: task.id,
       title: task.title,
       description: task.description,
-      rank: task.rank}
+      rank: task.rank,
+      list_id: task.list_id,
+      assigned_to: task.assigned_to_id}
   end
 end

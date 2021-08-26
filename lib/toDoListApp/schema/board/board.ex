@@ -10,7 +10,6 @@ defmodule ToDoListApp.BoardContext.Board do
     field(:description, :string)
 
     belongs_to(:owner, ToDoListApp.Account.User, references: :user_id)
-
     has_many(:lists, ToDoListApp.ListContext.List, foreign_key: :list_id)
 
     timestamps()

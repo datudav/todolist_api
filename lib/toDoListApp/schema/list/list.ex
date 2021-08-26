@@ -10,8 +10,8 @@ defmodule ToDoListApp.ListContext.List do
     field :description, :string
 
     belongs_to(:board, ToDoListApp.BoardContext.Board, references: :board_id)
-
     has_many(:tasks, ToDoListApp.TaskContext.Task, foreign_key: :task_id)
+    belongs_to(:creator, ToDoListApp.Account.User, references: :user_id)
 
     timestamps()
   end

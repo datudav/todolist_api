@@ -9,7 +9,7 @@ defmodule ToDoListApp.TaskContext.TaskComment do
     field :comments, :string
 
     belongs_to(:task, ToDoListApp.TaskContext.Task, references: :task_id)
-    belongs_to(:user, ToDoListApp.Account.User, references: :user_id)
+    belongs_to(:creator, ToDoListApp.Account.User, references: :user_id)
 
     timestamps()
   end

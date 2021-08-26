@@ -12,6 +12,7 @@ defmodule ToDoListApp.TaskContext.Task do
 
     belongs_to(:list, ToDoListApp.ListContext.List, references: :list_id)
     has_many(:task_comment, ToDoListApp.TaskContext.TaskComment, foreign_key: :task_id)
+    belongs_to(:assigned_to, ToDoListApp.Account.User, references: :user_id)
 
     timestamps()
   end
