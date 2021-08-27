@@ -26,5 +26,4 @@ defmodule ToDoListApp.BoardContext do
   def delete_board(%Board{} = board) do
     Repo.delete(board)
   end
-
 end

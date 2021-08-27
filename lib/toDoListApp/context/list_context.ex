@@ -10,7 +10,7 @@ defmodule ToDoListApp.ListContext do
             order_by: [asc: l.inserted_at])
   end
 
-  def get_list!(id), do: Repo.get!(TaskComment, id)
+  def get_list(list_id), do: Repo.get(List, list_id)
 
   def create_list(attrs \\ %{}) do
     %List{}

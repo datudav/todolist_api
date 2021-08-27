@@ -3,7 +3,7 @@ defmodule ToDoListApp.Account.BoardPermission do
   import Ecto.Changeset
 
   @primary_key {:board_permission_id, :binary_id, autogenerate: true}
-  schema "permission" do
+  schema "board_permission" do
     field :board_id, Ecto.UUID, null: false
     field :permission_id, Ecto.UUID, null: false
     field :user_id, Ecto.UUID, null: false

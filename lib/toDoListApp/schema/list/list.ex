@@ -4,7 +4,7 @@ defmodule ToDoListApp.ListContext.List do
   alias ToDoListApp.ListContext.List
 
   @primary_key {:list_id, :binary_id, autogenerate: true}
-  schema "lists" do
+  schema "list" do
     field :title, :string
     field :description, :string
     field :board_id, Ecto.UUID

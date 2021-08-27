@@ -31,7 +31,14 @@ defmodule ToDoListAppWeb.Router do
 
     scope "/v1", Api.V1, as: :v1 do
       resources "/users", UserController, except: [:new, :edit]
-      resources "/tasks", TaskController, except: [:new, :edit]
+      resources "/board", BoardController, only: [:index] do
+        resources "/board_permissions", BoardPermissionController, except: [:edit, :update]
+        resources "/lists", ListController, except: [:new, :edit] do
+          resources "/tasks", TaskController, except: [:new, :edit] do
+            resources "/task_comments", TaskCommentController, except: [:new, :edit]
+          end
+        end
+      end
     end
   end
 
