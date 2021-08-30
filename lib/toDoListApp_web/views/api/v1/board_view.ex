@@ -11,9 +11,13 @@ defmodule ToDoListAppWeb.Api.V1.BoardView do
   end
 
   def render("board.json", %{board: board}) do
-    %{id: board.board_id,
-      title: board.title,
-      description: board.description,
-      owner_id: board.owner_id}
+    %{
+        board: %{
+          board_id: board.board_id,
+          title: board.title,
+          description: board.description,
+          owner_id: board.owner_id
+        }
+      }
   end
 end

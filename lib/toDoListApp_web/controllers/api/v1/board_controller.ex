@@ -10,14 +10,34 @@ defmodule ToDoListAppWeb.Api.V1.BoardController do
     render(conn, "index.json", boards: boards)
   end
 
-  def show(conn, %{"board_id" => board_id}) do
-    board = BoardContext.get_board!(board_id)
-    render(conn, "index.json", board: board)
+  def show(conn, %{"id" => board_id}) do
+    case BoardContext.get_board!(board_id) do
+      {:ok, board} ->
+        conn
+        |> put_status(:ok)
+        |> put_view(ToDoListAppWeb.Api.V1.BoardView)
+        |> render("show.json", board: board)
+      {:error, message} ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(ToDoListAppWeb.ErrorView)
+        |> render("404.json", message: message)
+    end
   end
 
   def show_by_user(conn, %{"owner_id" => owner_id}) do
-    board = BoardContext.get_board_by_owner_id(owner_id)
-    render(conn, "index.json", board: board)
+    case BoardContext.get_board_by_owner_id!(owner_id) do
+      {:ok, board} ->
+        conn
+        |> put_status(:ok)
+        |> put_view(ToDoListAppWeb.Api.V1.BoardView)
+        |> render("show.json", board: board)
+      {:error, message} ->
+        conn
+        |> put_status(:not_found)
+        |> put_view(ToDoListAppWeb.ErrorView)
+        |> render("404.json", message: message)
+    end
   end
 
 end

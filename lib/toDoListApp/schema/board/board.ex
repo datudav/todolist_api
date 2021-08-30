@@ -4,7 +4,6 @@ defmodule ToDoListApp.BoardContext.Board do
   alias ToDoListApp.BoardContext.Board
 
   @primary_key {:board_id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "board" do
     field(:title, :string, null: false)
     field(:description, :string, null: false)
