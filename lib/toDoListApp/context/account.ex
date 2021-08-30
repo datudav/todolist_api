@@ -9,6 +9,8 @@ defmodule ToDoListApp.Account do
   alias ToDoListApp.Account.User
   alias ToDoListApp.Account.Permission
   alias ToDoListApp.Account.BoardPermission
+  alias ToDoListApp.BoardContext
+  alias ToDoListApp.BoardContext.Board
 
   @doc """
   Returns the list of users.
@@ -37,7 +39,16 @@ defmodule ToDoListApp.Account do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(user_id) do
+    case user = Repo.get_by(User, user_id: user_id) do
+      nil -> {:error, "The user does not exist"}
+      _ -> {:ok, user}
+    end
+  end
+
+  def get_user_by_email(email) do
+    Repo.get_by(User, email: email)
+  end
 
   @doc """
   Creates a user.
@@ -52,9 +63,13 @@ defmodule ToDoListApp.Account do
 
   """
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    if get_user_by_email(attrs["email"]) == nil do
+      %User{}
+      |> User.changeset(attrs)
+      |> Repo.insert()
+    else
+      {:error, "The email is already taken."}
+    end
   end
 
   @doc """
@@ -70,9 +85,17 @@ defmodule ToDoListApp.Account do
 
   """
   def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
+    with {:ok, "Validation passed"} <- validate_user(attrs) do
+      if get_user_by_email(attrs["email"]) == nil do
+        user
+        |> User.changeset(attrs)
+        |> Repo.update()
+      else
+        {:error, "The email is already taken."}
+      end
+    else
+      err -> err
+    end
   end
 
   @doc """
@@ -116,6 +139,33 @@ defmodule ToDoListApp.Account do
       {:ok, user}
     else
       {:error, "Invalid credentials"}
+    end
+  end
+
+  def register_user(user_params) do
+    with {:ok, "Validation passed"} <- validate_user(user_params),
+      {:ok, %User{} = user} <- create_user(user_params),
+      {:ok, %Board{} = board} <-
+        BoardContext.create_board(%{title: "User Board",
+        description: "Registered user's board",
+        owner_id: user.user_id}),
+      {:ok, %BoardPermission{}} <-
+        create_board_permission(%{user_id: user.user_id,
+        board_id: board.board_id,
+        permission_type: :manage}) do
+      {:ok, user}
+    else
+      err -> err
+    end
+  end
+
+  defp validate_user(user_params) do
+    case user_params do
+      %{"email" => nil} -> {:error, "Email is required."}
+      %{"email" => ""} -> {:error, "Email is required."}
+      %{"password" => nil} -> {:error, "Password is required"}
+      %{"password" => ""} -> {:error, "Password is required"}
+      _ -> {:ok, "Validation passed"}
     end
   end
 

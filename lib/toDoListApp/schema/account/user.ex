@@ -4,7 +4,6 @@ defmodule ToDoListApp.Account.User do
 
   @primary_key {:user_id, :binary_id, autogenerate: true}
   schema "users" do
-    field :is_active, :boolean, default: false
     field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string
@@ -15,8 +14,8 @@ defmodule ToDoListApp.Account.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :is_active, :password])
-    |> validate_required([:email, :is_active, :password])
+    |> cast(attrs, [:email, :password])
+    |> validate_required([:email, :password])
     |> unique_constraint(:email)
     |> put_password_hash()
   end

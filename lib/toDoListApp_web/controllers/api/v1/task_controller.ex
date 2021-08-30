@@ -15,7 +15,7 @@ defmodule ToDoListAppWeb.Api.V1.TaskController do
     with {:ok, %Task{} = task} <- TaskContext.create_task(task_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.task_path(conn, :show, task))
+      |> put_resp_header("location", Routes.api_v1_board_list_task_path(:show, task.board_id, task.list_id, task.task_id))
       |> render("show.json", task: task)
     end
   end

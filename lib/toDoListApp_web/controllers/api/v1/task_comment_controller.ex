@@ -15,7 +15,7 @@ defmodule ToDoListAppWeb.Api.V1.TaskCommentController do
     with {:ok, %TaskComment{} = task_comment} <- TaskContext.create_task_comment(task_comment_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.task_comment_path(conn, :show, task_comment))
+      |> put_resp_header("location", Routes.api_v1_board_list_task_task_comment_path(:show, task_comment.task_comment_id))
       |> render("show.json", task_comment: task_comment)
     end
   end

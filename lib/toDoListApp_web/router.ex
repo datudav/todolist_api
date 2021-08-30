@@ -23,6 +23,7 @@ defmodule ToDoListAppWeb.Router do
 
     scope "/v1", Api.V1, as: :v1 do
       post "/users/sign_in", UserController, :sign_in
+      post "/users", UserController, :register
     end
   end
 
@@ -30,8 +31,9 @@ defmodule ToDoListAppWeb.Router do
     pipe_through [:api, :api_auth]
 
     scope "/v1", Api.V1, as: :v1 do
-      resources "/users", UserController, except: [:new, :edit]
-      resources "/board", BoardController, only: [:index] do
+      resources "/users", UserController, only: [:index, :show, :update, :delete]
+      get "/board/by_owner_id", BoardController, :show_by_user
+      resources "/board", BoardController, only: [:index, :show] do
         resources "/board_permissions", BoardPermissionController, except: [:edit, :update]
         resources "/lists", ListController, except: [:new, :edit] do
           resources "/tasks", TaskController, except: [:new, :edit] do

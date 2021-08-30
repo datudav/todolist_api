@@ -3,7 +3,12 @@ defmodule ToDoListApp.BoardContext do
   alias ToDoListApp.Repo
   alias ToDoListApp.BoardContext.Board
 
-  def list_board(owner_id) do
+
+  def list_board() do
+    Repo.all(Board)
+  end
+
+  def get_board_by_owner_id(owner_id) do
     Repo.all(from b in Board,
             where: b.owner_id == ^owner_id,
             order_by: [asc: b.inserted_at])

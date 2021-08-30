@@ -22,7 +22,7 @@ defmodule ToDoListAppWeb.Api.V1.ListController do
     with {:ok, %List{} = list} <- ListContext.create_list(list_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.list_path(conn, :show, list))
+      |> put_resp_header("location", Routes.api_v1_board_list_path(conn, :show, list))
       |> render("show.json", list: list)
     end
   end

@@ -5,8 +5,8 @@ defmodule ToDoListApp.Account.BoardPermission do
   @primary_key {:board_permission_id, :binary_id, autogenerate: true}
   schema "board_permission" do
     field :board_id, Ecto.UUID, null: false
-    field :permission_id, Ecto.UUID, null: false
     field :user_id, Ecto.UUID, null: false
+    field :permission_type, Ecto.Enum, values: [:manage, :write, :read]
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule ToDoListApp.Account.BoardPermission do
   @doc false
   def changeset(board_permission, attrs) do
     board_permission
-    |> cast(attrs, [:board_id, :permission_id, :user_id])
-    |> validate_required([:board_id, :permission_id, :user_id])
+    |> cast(attrs, [:board_id, :user_id, :permission_type])
+    |> validate_required([:board_id, :user_id, :permission_type])
   end
 end

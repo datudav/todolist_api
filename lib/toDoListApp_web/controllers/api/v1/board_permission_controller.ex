@@ -15,7 +15,7 @@ defmodule ToDoListAppWeb.Api.V1.BoardPermissionController do
     with {:ok, %BoardPermission{} = board_permission} <- Account.create_board_permission(board_permission_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.board_permission_path(conn, :show, board_permission))
+      |> put_resp_header("location", Routes.api_v1_board_board_permission_path(conn, :show, board_permission))
       |> render("show.json", board_permission: board_permission)
     end
   end

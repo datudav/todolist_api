@@ -22,6 +22,13 @@ defmodule ToDoListAppWeb.ErrorView do
     }
   end
 
+  def render("422.json", %{message: message}) do
+    %{
+      errors: %{
+        detail: message
+      }
+    }
+  end
 
   def render("404.json", _assigns) do
     %{

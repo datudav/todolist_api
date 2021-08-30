@@ -2,7 +2,11 @@ defmodule ToDoListAppWeb.Api.V1.BoardView do
   use ToDoListAppWeb, :view
   alias ToDoListAppWeb.Api.V1.BoardView
 
-  def render("index.json", %{board: board}) do
+  def render("index.json", %{boards: boards}) do
+    %{data: render_many(boards, BoardView, "board.json")}
+  end
+
+  def render("show.json", %{board: board}) do
     %{data: render_one(board, BoardView, "board.json")}
   end
 
