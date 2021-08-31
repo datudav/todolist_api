@@ -3,6 +3,8 @@ defmodule ToDoListAppWeb.Api.V1.TaskController do
 
   alias ToDoListApp.TaskContext
   alias ToDoListApp.TaskContext.Task
+  alias ToDoListApp.ListContext
+  alias ToDoListApp.ListContext.List
 
   action_fallback ToDoListAppWeb.FallbackController
 
@@ -12,10 +14,11 @@ defmodule ToDoListAppWeb.Api.V1.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-    with {:ok, %Task{} = task} <- TaskContext.create_task(task_params) do
+    with {:ok, %Task{} = task} <- TaskContext.create_task(task_params),
+        {:ok, %List{} = list} <- ListContext.get_list(task.list_id) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.api_v1_board_list_task_path(:show, task.board_id, task.list_id, task.task_id))
+      |> put_resp_header("location", Routes.api_v1_board_list_task_path(:show, list.board_id, task.list_id, task.task_id))
       |> render("show.json", task: task)
     end
   end

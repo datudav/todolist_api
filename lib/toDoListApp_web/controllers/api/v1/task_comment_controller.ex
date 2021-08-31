@@ -2,7 +2,10 @@ defmodule ToDoListAppWeb.Api.V1.TaskCommentController do
   use ToDoListAppWeb, :controller
 
   alias ToDoListApp.TaskContext
+  alias ToDoListApp.TaskContext.Task
   alias ToDoListApp.TaskContext.TaskComment
+  alias ToDoListApp.ListContext
+  alias ToDoListApp.ListContext.List
 
   action_fallback ToDoListAppWeb.FallbackController
 
@@ -12,10 +15,12 @@ defmodule ToDoListAppWeb.Api.V1.TaskCommentController do
   end
 
   def create(conn, %{"task_comment" => task_comment_params}) do
-    with {:ok, %TaskComment{} = task_comment} <- TaskContext.create_task_comment(task_comment_params) do
+    with {:ok, %TaskComment{} = task_comment} <- TaskContext.create_task_comment(task_comment_params),
+        {:ok, %Task{} = task} <- TaskContext.get_task!(task_comment.task_id),
+        {:ok, %List{} = list} <- ListContext.get_list(task.list_id) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.api_v1_board_list_task_task_comment_path(:show, task_comment.task_comment_id))
+      |> put_resp_header("location", Routes.api_v1_board_list_task_task_comment_path(:show, list.board_id, task.list_id,task_comment.task_id, task_comment.task_comment_id))
       |> render("show.json", task_comment: task_comment)
     end
   end

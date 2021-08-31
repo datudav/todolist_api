@@ -34,7 +34,7 @@ defmodule ToDoListAppWeb.Router do
       resources "/users", UserController, only: [:index, :show, :update, :delete]
       get "/board/by_owner_id", BoardController, :show_by_user
       resources "/board", BoardController, only: [:index, :show] do
-        resources "/board_permissions", BoardPermissionController, except: [:edit, :update]
+        resources "/board_permissions", BoardPermissionController, except: [:edit, :new]
         resources "/lists", ListController, except: [:new, :edit] do
           resources "/tasks", TaskController, except: [:new, :edit] do
             resources "/task_comments", TaskCommentController, except: [:new, :edit]

@@ -1,4 +1,4 @@
-defmodule ToDoListApp.Account.BoardPermission do
+defmodule ToDoListApp.BoardContext.BoardPermission do
   use Ecto.Schema
   import Ecto.Changeset
 

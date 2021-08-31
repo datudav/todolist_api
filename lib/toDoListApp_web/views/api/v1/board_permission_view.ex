@@ -11,9 +11,13 @@ defmodule ToDoListAppWeb.Api.V1.BoardPermissionView do
   end
 
   def render("board_permission.json", %{board_permission: board_permission}) do
-    %{id: board_permission.board_permission_id,
-      board_id: board_permission.board_id,
-      permission_id: board_permission.permission_id,
-      user_id: board_permission.user_id}
+    %{
+      board_permission: %{
+        board_permission_id: board_permission.board_permission_id,
+        board_id: board_permission.board_id,
+        permission_type: board_permission.permission_type,
+        user_id: board_permission.user_id
+      }
+    }
   end
 end

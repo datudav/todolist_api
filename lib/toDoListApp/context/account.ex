@@ -8,9 +8,9 @@ defmodule ToDoListApp.Account do
 
   alias ToDoListApp.Account.User
   alias ToDoListApp.Account.Permission
-  alias ToDoListApp.Account.BoardPermission
   alias ToDoListApp.BoardContext
   alias ToDoListApp.BoardContext.Board
+  alias ToDoListApp.BoardContext.BoardPermission
 
   @doc """
   Returns the list of users.
@@ -150,7 +150,7 @@ defmodule ToDoListApp.Account do
         description: "Registered user's board",
         owner_id: user.user_id}),
       {:ok, %BoardPermission{}} <-
-        create_board_permission(%{user_id: user.user_id,
+        BoardContext.create_board_permission(%{user_id: user.user_id,
         board_id: board.board_id,
         permission_type: :manage}) do
       {:ok, user}
@@ -189,35 +189,5 @@ defmodule ToDoListApp.Account do
 
   def delete_permission(%Permission{} = permission) do
     Repo.delete(permission)
-  end
-
-  def list_board_permission(board_id) do
-    Repo.all(from b in BoardPermission,
-            where: b.board_id == ^board_id)
-  end
-
-  def create_board_permission(attrs \\ %{}) do
-    %BoardPermission{}
-    |> BoardPermission.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def get_board_permission(board_permission_id), do: Repo.get!(BoardPermission, board_permission_id)
-
-  def update_board_permission(%BoardPermission{} = board_permission, attrs) do
-    board_permission
-    |> BoardPermission.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_board_permission(%BoardPermission{} = board_permission) do
-    Repo.delete(board_permission)
-  end
-
-  def check_user_permission(board_id, user_id) do
-    case board_permission = Repo.get_by(BoardPermission, board_id: board_id, user_id: user_id) do
-      nil -> {:error, "The user does not have permission to perform the operation."}
-      _ -> {:ok, board_permission}
-    end
   end
 end

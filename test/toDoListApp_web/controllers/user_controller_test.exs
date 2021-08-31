@@ -2,7 +2,6 @@ defmodule ToDoListAppWeb.UserControllerTest do
   use ToDoListAppWeb.ConnCase
 
   alias ToDoListApp.Account
-  alias ToDoListApp.Account.User
 
   @create_attrs %{
     email: "some@email.com",
@@ -31,7 +30,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
     test "successful", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_attrs)
       assert %{
-                "user_id" => user_id,
+                "user_id" => _,
                 "email" => "some@email.com"
               } = json_response(conn, 201)["data"]["user"]
     end
@@ -160,7 +159,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_attrs[:email], password:  @create_attrs[:password])
 
       assert %{
-        "user_id" => user_id,
+        "user_id" => _,
         "email" => "some@email.com"
       } = json_response(conn, 200)["data"]["user"]
 

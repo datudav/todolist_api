@@ -3,8 +3,6 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
   alias ToDoListApp.Account
   alias ToDoListApp.Account.User
-  alias ToDoListApp.BoardContext
-  alias ToDoListApp.BoardContext.Board
 
   @create_user_attrs %{
     "email" => "some@email.com",
@@ -106,7 +104,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
       assert %{
         "owner_id" => _,
-        "board_id" => board_id,
+        "board_id" => _,
         "title" => _,
         "description" => _
       } = json_response(conn, 200)["data"]["board"]
