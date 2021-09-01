@@ -171,7 +171,7 @@ defmodule ToDoListApp.TaskContext do
 
   """
   def get_task_comment!(task_comment_id) do
-    case task_comment = Repo.get_by!(TaskComment, tasks_comment_id: task_comment_id) do
+    case task_comment = Repo.get_by(TaskComment, task_comment_id: task_comment_id) do
       nil -> {:error, "The task comment does not exist."}
       _ -> {:ok, task_comment}
     end

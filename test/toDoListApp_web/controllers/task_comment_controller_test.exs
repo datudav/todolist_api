@@ -1,4 +1,4 @@
-defmodule ToDoListAppWeb.TaskControllerTest do
+defmodule ToDoListAppWeb.TaskCommentControllerTest do
   use ToDoListAppWeb.ConnCase
 
   alias ToDoListApp.Account
@@ -52,30 +52,36 @@ defmodule ToDoListAppWeb.TaskControllerTest do
 
       conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
-      assert %{
-        "task_id" => _,
+      %{
+        "task_id" => task_id,
         "list_id" => _,
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :index, board_id, list_id))
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
-      assert %{
+      %{
         "task_id" => _,
-        "list_id" => _,
-        "assigned_to_id" => _,
-        "title" => _,
-        "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["task"]
+        "task_comment_id" => _,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
 
-      assert Enum.count(json_response(conn, 200)["data"]) === 1
+      conn = get(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :index, board_id, list_id, task_id))
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => _,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = Enum.at(json_response(conn, 200)["data"], 0)["task_comment"]
     end
 
-    test "render errors when passed list_id does not exist", %{conn: conn} do
+    test "render errors when passed task_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :index, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = get(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :index, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate))
 
       assert %{
         "detail" => "Resource not found"
@@ -86,7 +92,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
   describe "show" do
     setup [:create_user]
 
-    test "render task", %{conn: conn} do
+    test "render task comment", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
@@ -116,20 +122,28 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, board_id, list_id, task_id))
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => task_comment_id,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
+
+      conn = get(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :show, board_id, list_id, task_id, task_comment_id))
 
       assert %{
         "task_id" => _,
-        "list_id" => _,
-        "assigned_to_id" => _,
-        "title" => _,
-        "description" => _
-      } = json_response(conn, 200)["data"]["task"]
+        "task_comment_id" => _,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 200)["data"]["task_comment"]
     end
 
-    test "render errors when passed task_id does not exist", %{conn: conn} do
+    test "render errors when passed task_comment_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = get(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :show, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate))
 
       assert %{
         "detail" => "Resource not found"
@@ -140,67 +154,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
   describe "create" do
     setup [:create_user]
 
-    test "render created task", %{conn: conn} do
-      conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :index))
-      %{
-        "owner_id" => owner_id,
-        "board_id" => board_id,
-        "title" => _,
-        "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
-
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
-
-      assert %{
-        "list_id" => list_id,
-        "board_id" => _,
-        "creator_id" => _,
-        "title" => _,
-        "description" => _
-      } = json_response(conn, 201)["data"]["list"]
-
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
-
-      assert %{
-        "task_id" => _,
-        "list_id" => _,
-        "assigned_to_id" => nil,
-        "title" => "Task 1",
-        "description" => "This is the first task."
-      } = json_response(conn, 201)["data"]["task"]
-    end
-
-    test "render errors when creating task with incomplete details", %{conn: conn} do
-      conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :index))
-      %{
-        "owner_id" => owner_id,
-        "board_id" => board_id,
-        "title" => _,
-        "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
-
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
-
-      assert %{
-        "list_id" => list_id,
-        "board_id" => _,
-        "creator_id" => _,
-        "title" => _,
-        "description" => _
-      } = json_response(conn, 201)["data"]["list"]
-
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: nil, description: nil, list_id: list_id})
-
-      assert %{"detail" => _} = json_response(conn, 422)["errors"]
-    end
-  end
-
-  describe "delete" do
-    setup [:create_user]
-
-    test "no response on delete task", %{conn: conn} do
+    test "render created task comment", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
@@ -225,22 +179,110 @@ defmodule ToDoListAppWeb.TaskControllerTest do
       assert %{
         "task_id" => task_id,
         "list_id" => _,
-        "assigned_to_id" => nil,
-        "title" => "Task 1",
-        "description" => "This is the first task."
+        "assigned_to_id" => _,
+        "title" => _,
+        "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = delete(conn, Routes.api_v1_board_list_task_path(conn, :delete, board_id, list_id, task_id))
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => _,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
+    end
+
+    test "render errors when creating task comment with incomplete details", %{conn: conn} do
+      conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
+      conn = get(conn, Routes.api_v1_board_path(conn, :index))
+      %{
+        "owner_id" => owner_id,
+        "board_id" => board_id,
+        "title" => _,
+        "description" => _
+      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+
+      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+
+      assert %{
+        "list_id" => list_id,
+        "board_id" => _,
+        "creator_id" => _,
+        "title" => _,
+        "description" => _
+      } = json_response(conn, 201)["data"]["list"]
+
+      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+
+      assert %{
+        "task_id" => task_id,
+        "list_id" => _,
+        "assigned_to_id" => _,
+        "title" => _,
+        "description" => _
+      } = json_response(conn, 201)["data"]["task"]
+
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: nil, task_id: task_id, creator_id: owner_id})
+
+      assert %{"detail" => _} = json_response(conn, 422)["errors"]
+    end
+  end
+
+  describe "delete" do
+    setup [:create_user]
+
+    test "no response on delete task comment", %{conn: conn} do
+      conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
+      conn = get(conn, Routes.api_v1_board_path(conn, :index))
+      %{
+        "owner_id" => owner_id,
+        "board_id" => board_id,
+        "title" => _,
+        "description" => _
+      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+
+      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+
+      assert %{
+        "list_id" => list_id,
+        "board_id" => _,
+        "creator_id" => _,
+        "title" => _,
+        "description" => _
+      } = json_response(conn, 201)["data"]["list"]
+
+      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+
+      assert %{
+        "task_id" => task_id,
+        "list_id" => _,
+        "assigned_to_id" => _,
+        "title" => _,
+        "description" => _
+      } = json_response(conn, 201)["data"]["task"]
+
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => task_comment_id,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
+
+      conn = delete(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :delete, board_id, list_id, task_id, task_comment_id))
       assert response(conn, 204)
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, board_id, list_id, task_id))
+      conn = get(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :show, board_id, list_id, task_id, task_comment_id))
 
       assert %{
         "detail" => "Resource not found"
       } = json_response(conn, 404)["errors"]
     end
 
-    test "render errors when task_id does not exist", %{conn: conn} do
+    test "render errors when task_comment_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_user_attrs2)
       %{
         "user_id" => _
@@ -255,7 +297,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
   describe "update" do
     setup [:create_user]
 
-    test "render task", %{conn: conn} do
+    test "render task comment", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
@@ -280,21 +322,28 @@ defmodule ToDoListAppWeb.TaskControllerTest do
       assert %{
         "task_id" => task_id,
         "list_id" => _,
-        "assigned_to_id" => nil,
-        "title" => "Task 1",
-        "description" => "This is the first task."
+        "assigned_to_id" => _,
+        "title" => _,
+        "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = patch(conn, Routes.api_v1_board_list_task_path(conn, :update, board_id, list_id, task_id), task: %{"title" => "Task 1 updated title", "description" => "Updated description", "assigned_to_id" => owner_id})
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => task_comment_id,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
+
+      conn = patch(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :update, board_id, list_id, task_id,task_comment_id), task_comment: %{"comments" => "Task comment updated"})
+
       assert %{
         "task_id" => _,
-        "list_id" => _,
-        "assigned_to_id" => assigned_to_id,
-        "title" => "Task 1 updated title",
-        "description" => "Updated description"
-      } = json_response(conn, 200)["data"]["task"]
-
-      assert assigned_to_id === owner_id
+        "task_comment_id" => _,
+        "creator_id" => _,
+        "comments" =>  "Task comment updated"
+      } = json_response(conn, 200)["data"]["task_comment"]
     end
 
     test "render errors when request is missing required fields", %{conn: conn} do
@@ -322,15 +371,24 @@ defmodule ToDoListAppWeb.TaskControllerTest do
       assert %{
         "task_id" => task_id,
         "list_id" => _,
-        "assigned_to_id" => nil,
-        "title" => "Task 1",
-        "description" => "This is the first task."
+        "assigned_to_id" => _,
+        "title" => _,
+        "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = patch(conn, Routes.api_v1_board_list_task_path(conn, :update, board_id, list_id, task_id), task: %{"title" => nil, "description" => nil})
+      conn = post(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :create, board_id, list_id, task_id), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
+
+      %{
+        "task_id" => _,
+        "task_comment_id" => task_comment_id,
+        "creator_id" => _,
+        "comments" => "Task comment 1"
+      } = json_response(conn, 201)["data"]["task_comment"]
+
+      conn = patch(conn, Routes.api_v1_board_list_task_task_comment_path(conn, :update, board_id, list_id, task_id, task_comment_id), task_comment: %{"comments" => nil})
 
       assert %{
-        "detail" => "Title is required."
+        "detail" => "Comments is required."
       } = json_response(conn, 422)["errors"]
     end
   end
