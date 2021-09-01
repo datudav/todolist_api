@@ -4,14 +4,19 @@ defmodule ToDoListApp.BoardContext do
   alias ToDoListApp.BoardContext.Board
   alias ToDoListApp.BoardContext.BoardPermission
 
-  def list_board() do
-    Repo.all(Board)
+  def list_boards(params) do
+    query = from b in Board
+    query
+    |> board_build_query(params)
+    |> Repo.all()
   end
 
-  def get_board_by_owner_id!(owner_id) do
-    case board = Repo.get_by(Board, owner_id: owner_id) do
-      nil -> {:error, "The board with the owner_id provided does not exist."}
-      _ -> {:ok, board}
+  def board_build_query(query, params) do
+    params["owner_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(owner_id: ^text)
     end
   end
 
@@ -38,9 +43,32 @@ defmodule ToDoListApp.BoardContext do
     Repo.delete(board)
   end
 
-  def list_board_permission(board_id) do
-    Repo.all(from b in BoardPermission,
-            where: b.board_id == ^board_id)
+  # def list_board_permission(board_id) do
+  #   Repo.all(from b in BoardPermission,
+  #           where: b.board_id == ^board_id)
+  # end
+
+  def list_board_permissions(params) do
+    query = from b in BoardPermission
+    query
+    |> board_permission_build_query(params)
+    |> Repo.all()
+  end
+
+  def board_permission_build_query(query, params) do
+    params["user_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(user_id: ^text)
+    end
+
+    params["board_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(board_id: ^text)
+    end
   end
 
   def create_board_permission(attrs \\ %{}) do

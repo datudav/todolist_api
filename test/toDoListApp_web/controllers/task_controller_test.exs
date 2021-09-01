@@ -40,7 +40,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -50,7 +50,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => _,
@@ -60,7 +60,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :index, board_id, list_id))
+      conn = get(conn, Routes.api_v1_task_path(conn, :index, params: %{list_id: list_id}))
 
       assert %{
         "task_id" => _,
@@ -73,13 +73,11 @@ defmodule ToDoListAppWeb.TaskControllerTest do
       assert Enum.count(json_response(conn, 200)["data"]) === 1
     end
 
-    test "render errors when passed list_id does not exist", %{conn: conn} do
+    test "renders empty data when passed list_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :index, Ecto.UUID.generate, Ecto.UUID.generate))
-
-      assert %{
-        "detail" => "Resource not found"
-      } = json_response(conn, 404)["errors"]
+      conn = get(conn, Routes.api_v1_task_path(conn, :index, params: %{list_id: Ecto.UUID.generate}))
+      assert response(conn, 200)
+      assert Enum.count(json_response(conn, 200)["data"]) === 0
     end
   end
 
@@ -96,7 +94,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -106,7 +104,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => task_id,
@@ -116,7 +114,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, board_id, list_id, task_id))
+      conn = get(conn, Routes.api_v1_task_path(conn, :show, task_id))
 
       assert %{
         "task_id" => _,
@@ -129,7 +127,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
 
     test "render errors when passed task_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = get(conn, Routes.api_v1_task_path(conn, :show, Ecto.UUID.generate))
 
       assert %{
         "detail" => "Resource not found"
@@ -150,7 +148,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -160,7 +158,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => _,
@@ -181,7 +179,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -191,7 +189,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: nil, description: nil, list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: nil, description: nil, list_id: list_id})
 
       assert %{"detail" => _} = json_response(conn, 422)["errors"]
     end
@@ -210,7 +208,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -220,7 +218,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => task_id,
@@ -230,10 +228,10 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => "This is the first task."
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = delete(conn, Routes.api_v1_board_list_task_path(conn, :delete, board_id, list_id, task_id))
+      conn = delete(conn, Routes.api_v1_task_path(conn, :delete, task_id))
       assert response(conn, 204)
 
-      conn = get(conn, Routes.api_v1_board_list_task_path(conn, :show, board_id, list_id, task_id))
+      conn = get(conn, Routes.api_v1_task_path(conn, :show, task_id))
 
       assert %{
         "detail" => "Resource not found"
@@ -247,7 +245,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
       } = json_response(conn, 201)["data"]["user"]
 
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = delete(conn, Routes.api_v1_board_list_task_path(conn, :delete, Ecto.UUID.generate, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = delete(conn, Routes.api_v1_task_path(conn, :delete, Ecto.UUID.generate))
       assert response(conn, 404)
     end
   end
@@ -265,7 +263,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -275,7 +273,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => task_id,
@@ -285,7 +283,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => "This is the first task."
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = patch(conn, Routes.api_v1_board_list_task_path(conn, :update, board_id, list_id, task_id), task: %{"title" => "Task 1 updated title", "description" => "Updated description", "assigned_to_id" => owner_id})
+      conn = patch(conn, Routes.api_v1_task_path(conn, :update, task_id), task: %{"title" => "Task 1 updated title", "description" => "Updated description", "assigned_to_id" => owner_id})
       assert %{
         "task_id" => _,
         "list_id" => _,
@@ -307,7 +305,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_list_path(conn, :create, board_id), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
+      conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
       assert %{
         "list_id" => list_id,
@@ -317,7 +315,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => _
       } = json_response(conn, 201)["data"]["list"]
 
-      conn = post(conn, Routes.api_v1_board_list_task_path(conn, :create, board_id, list_id), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
+      conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
       assert %{
         "task_id" => task_id,
@@ -327,7 +325,7 @@ defmodule ToDoListAppWeb.TaskControllerTest do
         "description" => "This is the first task."
       } = json_response(conn, 201)["data"]["task"]
 
-      conn = patch(conn, Routes.api_v1_board_list_task_path(conn, :update, board_id, list_id, task_id), task: %{"title" => nil, "description" => nil})
+      conn = patch(conn, Routes.api_v1_task_path(conn, :update, task_id), task: %{"title" => nil, "description" => nil})
 
       assert %{
         "detail" => "Title is required."

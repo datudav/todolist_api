@@ -1,29 +1,20 @@
 defmodule ToDoListAppWeb.Api.V1.ListController do
   use ToDoListAppWeb, :controller
 
-  alias ToDoListApp.BoardContext
   alias ToDoListApp.ListContext
   alias ToDoListApp.ListContext.List
 
-  def index(conn, %{"board_id" => board_id}) do
-    case BoardContext.get_board!(board_id) do
-      {:ok, _board} ->
-        with {:ok, lists} <- {:ok, ListContext.list_lists(board_id)} do
-          conn
-          |> put_status(:ok)
-          |> render("index.json", lists: lists)
-        else
-          err ->
-          conn
-            |> put_status(:unprocessable_entity)
-            |> put_view(ToDoListAppWeb.ErrorView)
-            |> render("422.json", message: err)
-        end
-      {:error, message} ->
-        conn
-        |> put_status(:not_found)
+  def index(conn, params) do
+    with {:ok, lists} <- {:ok, ListContext.list_lists(Map.get(params, "params"))} do
+      conn
+      |> put_status(:ok)
+      |> render("index.json", lists: lists)
+    else
+      err ->
+      conn
+        |> put_status(:unprocessable_entity)
         |> put_view(ToDoListAppWeb.ErrorView)
-        |> render("404.json", message: message)
+        |> render("422.json", message: err)
     end
   end
 
@@ -42,26 +33,18 @@ defmodule ToDoListAppWeb.Api.V1.ListController do
     end
   end
 
-  def create(conn, %{"board_id" => board_id, "list" => list_params}) do
-    case BoardContext.get_board!(board_id) do
-      {:ok, _board} ->
-        with {:ok, %List{} = list} <- ListContext.create_list(list_params) do
-          conn
-          |> put_status(:created)
-          |> put_resp_header("location", Routes.api_v1_board_list_path(conn, :show, list.board_id, list.list_id))
-          |> render("show.json", list: list)
-        else
-          {:error, message} ->
-          conn
-            |> put_status(:unprocessable_entity)
-            |> put_view(ToDoListAppWeb.ErrorView)
-            |> render("422.json", message: message)
-        end
-    {:error, message} ->
+  def create(conn, %{"list" => list_params}) do
+    with {:ok, %List{} = list} <- ListContext.create_list(list_params) do
       conn
-      |> put_status(:not_found)
-      |> put_view(ToDoListAppWeb.ErrorView)
-      |> render("404.json", message: message)
+      |> put_status(:created)
+      |> put_resp_header("location", Routes.api_v1_list_path(conn, :show, list.list_id))
+      |> render("show.json", list: list)
+    else
+      {:error, message} ->
+      conn
+        |> put_status(:unprocessable_entity)
+        |> put_view(ToDoListAppWeb.ErrorView)
+        |> render("422.json", message: message)
     end
   end
 
