@@ -4,10 +4,25 @@ defmodule ToDoListApp.ListContext do
   alias ToDoListApp.Repo
   alias ToDoListApp.ListContext.List
 
-  def list_lists(board_id) do
-    Repo.all(from l in List,
-            where: l.board_id == ^board_id,
-            order_by: [asc: l.inserted_at])
+  def list_lists(params) do
+    query = from l in List
+    Repo.all(list_build_query(query, params))
+  end
+
+  def list_build_query(query, params) do
+    params["board_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(board_id: ^text)
+    end
+
+    params["creator_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(creator_id: ^text)
+    end
   end
 
   def get_list!(list_id) do

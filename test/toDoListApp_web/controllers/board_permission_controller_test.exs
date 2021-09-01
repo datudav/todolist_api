@@ -27,7 +27,6 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
     %{user: user}
   end
 
-
   describe "index" do
     setup [:create_user]
 
@@ -36,12 +35,12 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
         "owner_id" => owner_id,
-        "board_id" => board_id,
+        "board_id" => _,
         "title" => _,
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :index, board_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :index))
 
       assert %{
         "board_permission_id" => _,
@@ -55,11 +54,9 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
 
     test "render errors when passed board_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :index, Ecto.UUID.generate))
-
-      assert %{
-        "detail" => "Resource not found"
-      } = json_response(conn, 404)["errors"]
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :index, params: %{board_id: Ecto.UUID.generate}))
+      assert response(conn, 200)
+      assert Enum.count(json_response(conn, 200)["data"]) === 0
     end
   end
 
@@ -71,12 +68,12 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
         "owner_id" => _,
-        "board_id" => board_id,
+        "board_id" => _,
         "title" => _,
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :index, board_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :index))
 
       %{
         "board_permission_id" => board_permission_id,
@@ -85,7 +82,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "permission_type" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board_permission"]
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :show, board_id, board_permission_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :show, board_permission_id))
 
       assert %{
         "board_permission_id" => _,
@@ -97,7 +94,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
 
     test "render errors when passed board_id does not exist", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :show, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :show, Ecto.UUID.generate))
 
       assert %{
         "detail" => "Resource not found"
@@ -123,7 +120,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_board_permission_path(conn, :create, board_id),
+      conn = post(conn, Routes.api_v1_board_permission_path(conn, :create),
         board_permission: %{"board_id" => board_id, "user_id" => user2_id, "permission_type" => "write"})
 
       assert %{
@@ -135,7 +132,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
 
       assert permission_type === "write"
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :index, board_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :index, params: %{board_id: board_id}))
 
       assert Enum.count(json_response(conn, 200)["data"]) === 2
     end
@@ -150,20 +147,17 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
       %{
         "owner_id" => _,
-        "board_id" => board_id,
+        "board_id" => _,
         "title" => _,
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_board_permission_path(conn, :create, board_id),
+      conn = post(conn, Routes.api_v1_board_permission_path(conn, :create),
         board_permission: %{"board_id" => nil, "user_id" => nil, "permission_type" => nil})
 
       assert %{"detail" => _} = json_response(conn, 422)["errors"]
     end
   end
-
-
-
 
   describe "delete" do
     setup [:create_user]
@@ -183,7 +177,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_board_permission_path(conn, :create, board_id),
+      conn = post(conn, Routes.api_v1_board_permission_path(conn, :create),
         board_permission: %{"board_id" => board_id, "user_id" => user2_id, "permission_type" => "write"})
 
       %{
@@ -193,10 +187,10 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "permission_type" => _
       } = json_response(conn, 201)["data"]["board_permission"]
 
-      conn = delete(conn, Routes.api_v1_board_board_permission_path(conn, :delete, board_id, board_permission_id))
+      conn = delete(conn, Routes.api_v1_board_permission_path(conn, :delete, board_permission_id))
       assert response(conn, 204)
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :show, board_id, board_permission_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :show, board_permission_id))
 
       assert %{
         "detail" => "Resource not found"
@@ -210,11 +204,10 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
       } = json_response(conn, 201)["data"]["user"]
 
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = delete(conn, Routes.api_v1_board_board_permission_path(conn, :delete, Ecto.UUID.generate, Ecto.UUID.generate))
+      conn = delete(conn, Routes.api_v1_board_permission_path(conn, :delete, Ecto.UUID.generate))
       assert response(conn, 404)
     end
   end
-
 
   describe "update" do
     setup [:create_user]
@@ -234,7 +227,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_board_permission_path(conn, :create, board_id),
+      conn = post(conn, Routes.api_v1_board_permission_path(conn, :create),
         board_permission: %{"board_id" => board_id, "user_id" => user2_id, "permission_type" => "write"})
 
       %{
@@ -244,7 +237,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "permission_type" => "write"
       } = json_response(conn, 201)["data"]["board_permission"]
 
-      conn = patch(conn, Routes.api_v1_board_board_permission_path(conn, :update, board_id, board_permission_id), board_permission: %{"permission_type" => "read"})
+      conn = patch(conn, Routes.api_v1_board_permission_path(conn, :update, board_permission_id), board_permission: %{"permission_type" => "read"})
       assert %{
         "board_permission_id" => _,
         "board_id" => _,
@@ -252,7 +245,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "permission_type" => "read"
       } = json_response(conn, 200)["data"]["board_permission"]
 
-      conn = get(conn, Routes.api_v1_board_board_permission_path(conn, :show, board_id, board_permission_id))
+      conn = get(conn, Routes.api_v1_board_permission_path(conn, :show, board_permission_id))
 
       assert %{
         "board_permission_id" => _,
@@ -277,7 +270,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "description" => _
       } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
-      conn = post(conn, Routes.api_v1_board_board_permission_path(conn, :create, board_id),
+      conn = post(conn, Routes.api_v1_board_permission_path(conn, :create),
         board_permission: %{"board_id" => board_id, "user_id" => user2_id, "permission_type" => "write"})
 
       %{
@@ -287,7 +280,7 @@ defmodule ToDoListAppWeb.BoardPermissionControllerTest do
         "permission_type" => "write"
       } = json_response(conn, 201)["data"]["board_permission"]
 
-      conn = patch(conn, Routes.api_v1_board_board_permission_path(conn, :update, board_id, board_permission_id), board_permission: %{"permission_type" => "owner"})
+      conn = patch(conn, Routes.api_v1_board_permission_path(conn, :update, board_permission_id), board_permission: %{"permission_type" => "owner"})
 
       assert %{
         "detail" => "Permission_type provided is invalid."

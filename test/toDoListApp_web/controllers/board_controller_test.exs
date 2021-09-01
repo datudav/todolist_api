@@ -55,23 +55,22 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
     test "render board", %{conn: conn, user: %User{} = user} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :show_by_user), owner_id: user.user_id)
+      conn = get(conn, Routes.api_v1_board_path(conn, :index, params: %{owner_id: user.user_id}))
 
       assert %{
         "owner_id" => _,
         "board_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 200)["data"]["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
     end
 
     test "render errors when the owner_id is invalid", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :show_by_user), owner_id: Ecto.UUID.generate)
+      conn = get(conn, Routes.api_v1_board_path(conn, :index, params: %{owner_id: Ecto.UUID.generate}))
+      assert response(conn, 200)
 
-      assert %{
-        "detail" => "Resource not found"
-      } = json_response(conn, 404)["errors"]
+      assert Enum.count(json_response(conn, 200)["data"]) === 0
     end
   end
 
@@ -80,14 +79,14 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
     test "render board", %{conn: conn, user: %User{} = user} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :show_by_user), owner_id: user.user_id)
+      conn = get(conn, Routes.api_v1_board_path(conn, :index, params: %{owner_id: user.user_id}))
 
       assert %{
         "owner_id" => _,
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = json_response(conn, 200)["data"]["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
       conn = get(conn, Routes.api_v1_board_path(conn, :show, board_id))
       assert %{
@@ -100,14 +99,14 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
     test "render errors when the board_id is invalid", %{conn: conn, user: %User{} = user} do
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-      conn = get(conn, Routes.api_v1_board_path(conn, :show_by_user), owner_id: user.user_id)
+      conn = get(conn, Routes.api_v1_board_path(conn, :index, params: %{owner_id: user.user_id}))
 
       assert %{
         "owner_id" => _,
         "board_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 200)["data"]["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
 
       conn = get(conn, Routes.api_v1_board_path(conn, :show, Ecto.UUID.generate()))
 

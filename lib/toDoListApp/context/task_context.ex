@@ -18,10 +18,29 @@ defmodule ToDoListApp.TaskContext do
       [%Task{}, ...]
 
   """
-  def list_tasks(list_id) do
-    Repo.all(from t in Task,
-            where: t.list_id == ^list_id,
-            order_by: [asc: t.rank])
+  def list_tasks(params) do
+    query = from t in Task, order_by: [asc: t.rank]
+    query
+    |> task_build_query(params)
+    |> Repo.all()
+  end
+
+  def task_build_query(query, params) do
+    params["list_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(list_id: ^text)
+    end
+
+    params["assigned_to_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(assigned_to_id: ^text)
+
+    query
+    end
   end
 
   @doc """
@@ -141,19 +160,27 @@ defmodule ToDoListApp.TaskContext do
       update_task(task, %{rank: new_rank})
   end
 
-  @doc """
-  Returns the list of task comments by task_id.
+  def list_task_comments(params) do
+    query = from t in TaskComment, order_by: [asc: t.inserted_at]
+    query
+    |> task_comments_build_query(params)
+    |> Repo.all()
+  end
 
-  ## Examples
+  def task_comments_build_query(query, params) do
+    params["task_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(task_id: ^text)
+    end
 
-      iex> list_task_comments()
-      [%Task{}, ...]
-
-  """
-  def list_task_comments(task_id) do
-    Repo.all(from t in TaskComment,
-      where: t.task_id == ^task_id,
-      order_by: [asc: t.inserted_at])
+    params["creator_id"]
+    |> case do
+      nil -> query
+      "" -> query
+      text -> query |> where(creator_id: ^text)
+    end
   end
 
   @doc """
