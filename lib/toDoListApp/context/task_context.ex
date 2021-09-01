@@ -38,7 +38,12 @@ defmodule ToDoListApp.TaskContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_task!(id), do: Repo.get!(Task, id)
+  def get_task!(task_id) do
+    case task = Repo.get_by(Task, task_id: task_id) do
+      nil -> {:error, "The task does not exist"}
+      _ -> {:ok, task}
+    end
+  end
 
   @doc """
   Creates a task.
@@ -53,10 +58,14 @@ defmodule ToDoListApp.TaskContext do
 
   """
   def create_task(attrs \\ %{}) do
-    %Task{}
-    |> Task.changeset(attrs)
-    |> set_unix_epoch
-    |> Repo.insert()
+    with {:ok, "Validation passed"} <- validate_task(attrs) do
+      %Task{}
+      |> Task.changeset(attrs)
+      |> set_unix_epoch
+      |> Repo.insert()
+    else
+      {:error, message} -> {:error, message}
+    end
   end
 
   @doc """
@@ -72,9 +81,13 @@ defmodule ToDoListApp.TaskContext do
 
   """
   def update_task(%Task{} = task, attrs) do
-    task
-    |> Task.changeset(attrs)
-    |> Repo.update()
+    with {:ok, "Validation passed"} <- validate_task(attrs) do
+      task
+      |> Task.changeset(attrs)
+      |> Repo.update()
+    else
+      {:error, message} -> {:error, message}
+    end
   end
 
   @doc """
@@ -157,8 +170,12 @@ defmodule ToDoListApp.TaskContext do
       ** (Ecto.NoResultsError)
 
   """
-  def get_task_comment!(id), do: Repo.get!(TaskComment, id)
-
+  def get_task_comment!(task_comment_id) do
+    case task_comment = Repo.get_by!(TaskComment, tasks_comment_id: task_comment_id) do
+      nil -> {:error, "The task comment does not exist."}
+      _ -> {:ok, task_comment}
+    end
+  end
 
   @doc """
   Creates a task comment.
@@ -173,9 +190,13 @@ defmodule ToDoListApp.TaskContext do
 
   """
   def create_task_comment(attrs \\ %{}) do
-    %TaskComment{}
-    |> TaskComment.changeset(attrs)
-    |> Repo.insert()
+    with {:ok, "Validation passed"} <- validate_task_comment(attrs) do
+      %TaskComment{}
+      |> TaskComment.changeset(attrs)
+      |> Repo.insert()
+    else
+      {:error, message} -> {:error, message}
+    end
   end
 
   @doc """
@@ -191,9 +212,13 @@ defmodule ToDoListApp.TaskContext do
 
   """
   def update_task_comment(%TaskComment{} = task_comment, attrs) do
-    task_comment
-    |> TaskComment.changeset(attrs)
-    |> Repo.update()
+    with {:ok, "Validation passed"} <- validate_task_comment(attrs) do
+      task_comment
+      |> TaskComment.changeset(attrs)
+      |> Repo.update()
+    else
+      {:error, message} -> {:error, message}
+    end
   end
 
     @doc """
@@ -225,5 +250,24 @@ defmodule ToDoListApp.TaskContext do
     :calendar.universal_time()
     |> :calendar.datetime_to_gregorian_seconds()
     |> Kernel.-(62167219200)
+  end
+
+  defp validate_task(task_params) do
+    case task_params do
+      %{"title" => nil} -> {:error, "Title is required."}
+      %{"description" => nil} -> {:error, "Description is required."}
+      %{"list_id" => nil} -> {:error, "Board_id is required"}
+      _ -> {:ok, "Validation passed"}
+    end
+  end
+
+
+  defp validate_task_comment(task_comment_params) do
+    case task_comment_params do
+      %{"comments" => nil} -> {:error, "Comments is required."}
+      %{"creator_id" => nil} -> {:error, "Creator_id is required."}
+      %{"task_id" => nil} -> {:error, "Task_id is required"}
+      _ -> {:ok, "Validation passed"}
+    end
   end
 end

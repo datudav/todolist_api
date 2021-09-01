@@ -9,7 +9,7 @@ defmodule ToDoListApp.TaskContext.Task do
     field :title, :string
     field :rank, :decimal
     field :list_id, Ecto.UUID
-    field :assigned_to_id, Ecto.UUID
+    field :assigned_to_id, Ecto.UUID, null: true
 
     timestamps()
   end
@@ -18,6 +18,6 @@ defmodule ToDoListApp.TaskContext.Task do
   def changeset(%Task{} = task, attrs) do
     task
     |> cast(attrs, [:title, :description, :rank, :list_id, :assigned_to_id])
-    |> validate_required([:title, :description, :list_id, :assigned_to_id])
+    |> validate_required([:title, :description, :list_id])
   end
 end
