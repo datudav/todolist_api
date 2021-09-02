@@ -32,7 +32,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
                 "user_id" => _,
                 "email" => "some@email.com"
-              } = json_response(conn, 201)["data"]["user"]
+              } = json_response(conn, 201)["data"]
     end
 
     test "renders error when the request passed is invalid", %{conn: conn} do
@@ -61,14 +61,14 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
         "user_id" => user_id,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
 
       conn = get(conn, Routes.api_v1_user_path(conn, :show, user_id))
 
       assert %{
         "user_id" => _user_id,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "renders error when the credentials are invalid", %{conn: conn} do
@@ -97,16 +97,16 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
         "user_id" => user_id,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
 
       conn = patch(conn, Routes.api_v1_user_path(conn, :update, user_id), user: @update_attrs)
-      assert %{"user_id" => user_id} = json_response(conn, 200)["data"]["user"]
+      assert %{"user_id" => user_id} = json_response(conn, 200)["data"]
       conn = get(conn, Routes.api_v1_user_path(conn, :show, user_id))
 
       assert %{
                "user_id" => _user_id,
                "email" => "some.updated@email.com"
-             } = json_response(conn, 200)["data"]["user"]
+             } = json_response(conn, 200)["data"]
     end
 
     test "renders error when data is invalid", %{conn: conn} do
@@ -116,7 +116,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
         "user_id" => user_id,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
 
       conn = patch(conn, Routes.api_v1_user_path(conn, :update, user_id), user: @invalid_attrs)
 
@@ -129,7 +129,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
                "user_id" => _user_id,
                "email" => "some@email.com"
-             } = json_response(conn, 200)["data"]["user"]
+             } = json_response(conn, 200)["data"]
     end
   end
 
@@ -142,7 +142,7 @@ defmodule ToDoListAppWeb.UserControllerTest do
       assert %{
         "user_id" => user_id,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
 
       conn = delete(conn, Routes.api_v1_user_path(conn, :delete, user_id))
       assert response(conn, 204)
@@ -158,10 +158,10 @@ defmodule ToDoListAppWeb.UserControllerTest do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_attrs2)
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_attrs[:email], password:  @create_attrs[:password])
 
-      assert %{
+      %{
         "user_id" => _,
         "email" => "some@email.com"
-      } = json_response(conn, 200)["data"]["user"]
+      } = json_response(conn, 200)["data"]
 
       conn = get(conn, Routes.api_v1_user_path(conn, :index))
 

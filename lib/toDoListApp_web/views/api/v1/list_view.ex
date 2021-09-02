@@ -12,13 +12,11 @@ defmodule ToDoListAppWeb.Api.V1.ListView do
 
   def render("list.json", %{list: list}) do
     %{
-        list: %{
-          list_id: list.list_id,
-          title: list.title,
-          description: list.description,
-          board_id: list.board_id,
-          creator_id: list.creator_id
-        }
+      list_id: list.list_id,
+      title: list.title,
+      description: list.description,
+      board_id: list.board_id,
+      creator_id: list.creator_id
     }
   end
 end

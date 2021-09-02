@@ -38,7 +38,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -48,7 +48,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_v1_list_path(conn, :index, params: %{board_id: board_id}))
 
@@ -58,7 +58,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["list"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
     end
 
     test "renders empty data when passed board_id does not exist", %{conn: conn} do
@@ -80,7 +80,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -90,7 +90,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_v1_list_path(conn, :index))
 
@@ -100,7 +100,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["list"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = get(conn, Routes.api_v1_list_path(conn, :show, list_id))
 
@@ -110,7 +110,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 200)["data"]["list"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "render errors when passed board_id does not exist", %{conn: conn} do
@@ -134,7 +134,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -144,14 +144,14 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
     end
 
     test "render errors when creating list with incomplete details", %{conn: conn} do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_user_attrs2)
       %{
         "user_id" => _
-      } = json_response(conn, 201)["data"]["user"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = get(conn, Routes.api_v1_board_path(conn, :index))
@@ -160,7 +160,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: nil, description: nil, board_id: board_id, creator_id: owner_id})
 
@@ -179,7 +179,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -189,7 +189,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = delete(conn, Routes.api_v1_list_path(conn, :delete, list_id))
       assert response(conn, 204)
@@ -205,7 +205,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_user_attrs2)
       %{
         "user_id" => _
-      } = json_response(conn, 201)["data"]["user"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = delete(conn, Routes.api_v1_list_path(conn, :delete, Ecto.UUID.generate))
@@ -224,7 +224,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -234,7 +234,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = patch(conn, Routes.api_v1_list_path(conn, :update, list_id), list: %{"title" => "Updated Title List 1"})
       assert %{
@@ -243,7 +243,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "Updated Title List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 200)["data"]["list"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "render errors when request is missing required fields", %{conn: conn} do
@@ -254,7 +254,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -264,7 +264,7 @@ defmodule ToDoListAppWeb.ListControllerTest do
         "creator_id" => _,
         "title" => "List 1",
         "description" => "This is the first list."
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = patch(conn, Routes.api_v1_list_path(conn, :update, list_id), list: %{"title" => nil})
 

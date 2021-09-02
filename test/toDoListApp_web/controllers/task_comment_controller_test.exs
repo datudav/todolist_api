@@ -38,7 +38,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -48,7 +48,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -58,7 +58,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -67,7 +67,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => _,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_v1_task_comment_path(conn, :index, params: %{task_id: task_id}))
 
@@ -76,7 +76,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => _,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = Enum.at(json_response(conn, 200)["data"], 0)["task_comment"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
     end
 
     test "render errors when passed task_id does not exist", %{conn: conn} do
@@ -98,7 +98,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -108,7 +108,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -118,7 +118,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -127,7 +127,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => task_comment_id,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
 
       conn = get(conn, Routes.api_v1_task_comment_path(conn, :show, task_comment_id))
 
@@ -136,7 +136,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => _,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 200)["data"]["task_comment"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "render errors when passed task_comment_id does not exist", %{conn: conn} do
@@ -160,7 +160,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -170,7 +170,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -180,7 +180,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -189,7 +189,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => _,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
     end
 
     test "render errors when creating task comment with incomplete details", %{conn: conn} do
@@ -200,7 +200,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -210,7 +210,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -220,7 +220,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: nil, task_id: task_id, creator_id: owner_id})
 
@@ -239,7 +239,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -249,7 +249,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -259,7 +259,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -268,7 +268,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => task_comment_id,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
 
       conn = delete(conn, Routes.api_v1_task_comment_path(conn, :delete, task_comment_id))
       assert response(conn, 204)
@@ -284,7 +284,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
       conn = post(conn, Routes.api_v1_user_path(conn, :register), user: @create_user_attrs2)
       %{
         "user_id" => _
-      } = json_response(conn, 201)["data"]["user"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
       conn = delete(conn, Routes.api_v1_task_comment_path(conn, :delete, Ecto.UUID.generate))
@@ -303,7 +303,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -313,7 +313,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -323,7 +323,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -332,7 +332,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => task_comment_id,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
 
       conn = patch(conn, Routes.api_v1_task_comment_path(conn, :update,task_comment_id), task_comment: %{"comments" => "Task comment updated"})
 
@@ -341,7 +341,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => _,
         "creator_id" => _,
         "comments" =>  "Task comment updated"
-      } = json_response(conn, 200)["data"]["task_comment"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "render errors when request is missing required fields", %{conn: conn} do
@@ -352,7 +352,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = post(conn, Routes.api_v1_list_path(conn, :create), list: %{title: "List 1", description: "This is the first list.", board_id: board_id, creator_id: owner_id})
 
@@ -362,7 +362,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "creator_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["list"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_path(conn, :create), task: %{title: "Task 1", description: "This is the first task.", list_id: list_id})
 
@@ -372,7 +372,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "assigned_to_id" => _,
         "title" => _,
         "description" => _
-      } = json_response(conn, 201)["data"]["task"]
+      } = json_response(conn, 201)["data"]
 
       conn = post(conn, Routes.api_v1_task_comment_path(conn, :create), task_comment: %{comments: "Task comment 1", task_id: task_id, creator_id: owner_id})
 
@@ -381,7 +381,7 @@ defmodule ToDoListAppWeb.TaskCommentControllerTest do
         "task_comment_id" => task_comment_id,
         "creator_id" => _,
         "comments" => "Task comment 1"
-      } = json_response(conn, 201)["data"]["task_comment"]
+      } = json_response(conn, 201)["data"]
 
       conn = patch(conn, Routes.api_v1_task_comment_path(conn, :update, task_comment_id), task_comment: %{"comments" => nil})
 

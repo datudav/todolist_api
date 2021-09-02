@@ -12,14 +12,12 @@ defmodule ToDoListAppWeb.Api.V1.TaskView do
 
   def render("task.json", %{task: task}) do
     %{
-        task: %{
-          task_id: task.task_id,
-          title: task.title,
-          description: task.description,
-          rank: task.rank,
-          list_id: task.list_id,
-          assigned_to_id: task.assigned_to_id
-        }
+      task_id: task.task_id,
+      title: task.title,
+      description: task.description,
+      rank: task.rank,
+      list_id: task.list_id,
+      assigned_to_id: task.assigned_to_id
     }
   end
 end

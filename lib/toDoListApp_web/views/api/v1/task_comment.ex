@@ -12,12 +12,10 @@ defmodule ToDoListAppWeb.Api.V1.TaskCommentView do
 
   def render("task_comment.json", %{task_comment: task_comment}) do
     %{
-        task_comment: %{
-          task_comment_id: task_comment.task_comment_id,
-          comments: task_comment.comments,
-          creator_id: task_comment.creator_id,
-          task_id: task_comment.task_id
-        }
+        task_comment_id: task_comment.task_comment_id,
+        comments: task_comment.comments,
+        creator_id: task_comment.creator_id,
+        task_id: task_comment.task_id
       }
   end
 end

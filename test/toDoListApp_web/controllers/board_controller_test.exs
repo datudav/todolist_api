@@ -20,7 +20,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
 
   def fixture(:sign_in, conn) do
     conn = post(conn, Routes.api_v1_user_path(conn, :sign_in), email: @create_user_attrs["email"], password: @create_user_attrs["password"])
-    json_response(conn, 200)["data"]["user"]
+    json_response(conn, 200)["data"]
   end
 
   defp create_user(_) do
@@ -44,7 +44,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
         "board_id" => _,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       assert Enum.count(json_response(conn, 200)["data"]) == 1
     end
@@ -62,7 +62,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
         "board_id" => _,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
     end
 
     test "render errors when the owner_id is invalid", %{conn: conn} do
@@ -86,7 +86,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
         "board_id" => board_id,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = get(conn, Routes.api_v1_board_path(conn, :show, board_id))
       assert %{
@@ -94,7 +94,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
         "board_id" => _board_id,
         "title" => _,
         "description" => _
-      } = json_response(conn, 200)["data"]["board"]
+      } = json_response(conn, 200)["data"]
     end
 
     test "render errors when the board_id is invalid", %{conn: conn, user: %User{} = user} do
@@ -106,7 +106,7 @@ defmodule ToDoListAppWeb.BoardControllerTest do
         "board_id" => _,
         "title" => _,
         "description" => _
-      } = Enum.at(json_response(conn, 200)["data"], 0)["board"]
+      } = Enum.at(json_response(conn, 200)["data"], 0)
 
       conn = get(conn, Routes.api_v1_board_path(conn, :show, Ecto.UUID.generate()))
 
